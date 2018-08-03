@@ -35,8 +35,37 @@ app.post("/btc", async (req, res) => {
       .send(`Amount ${amount} higher than max BTC amount ${maxBTC}`);
   else
     BTCfaucet.sendTx(amount, dest)
-      .then(result => res.json(result))
-      .catch(err => res.json(err));
+      .then(result => res.status(200).json(result))
+      .catch(err => res.status(500).json(err));
+});
+
+app.post("/ltc", async (req, res) => {
+  const dest = req.body.destination;
+  const amount = req.body.amount;
+  if (amount > maxLTC)
+    res
+      .status(500)
+      .send(`Amount ${amount} higher than max LTC amount ${maxLTC}`);
+  else
+    try {
+      let result = await LTCfaucet.sendTx(amount, dest);
+      res.status(200).json(result);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+});
+
+app.post("/eth", async (req, res) => {
+  const dest = req.body.destination;
+  const amount = req.body.amount;
+  if (amount > maxETH)
+    res
+      .status(500)
+      .send(`Amount ${amount} higher than max ETH amount ${maxETH}`);
+  else
+    ETHfaucet.sendTx(amount, dest)
+      .then(result => res.status(200).json(result))
+      .catch(err => res.status(500).json(err));
 });
 
 var listener = app.listen(55688, function() {

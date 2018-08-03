@@ -43,38 +43,37 @@ module.exports.sendTx = async (amount, destination) => {
   if (!result.length) {
     // if address has not already been added to watch list
     console.log(
-      `Arcana address not imported in LTC node, reimporting. (This could take a few minutes...)`
+      `Faucet address not imported in LTC node, reimporting. (This could take a few minutes...)`
     );
     await nodeClient.callRPC({
       payload: {
         jsonrpc: "2.0",
         id: Date.now(),
         method: "importaddress",
-        params: [faucetLTCAddress, "ArcanaTest", true]
+        params: [faucetLTCAddress, "TestFaucet", true]
       }
     });
     result = await nodeClient.callRPC({ payload });
   }
 
-  const toSpend = result.find(utxo => utxo.amount > amount);
-
-  const utxo = new bitcore.Transaction.UnspentOutput({
-    txid: toSpend.txid,
-    vout: toSpend.vout,
-    address: toSpend.address,
-    scriptPubKey: toSpend.scriptPubKey,
-    amount: toSpend.amount
-  });
-
-  const tx = new bitcore.Transaction()
-    .from(utxo)
-    .to(destination, amount * 100000000)
-    .change(faucetLTCAddress)
-    .sign(privateKey);
-
   try {
-    const txid = await nodeClient
-    .callRPC({
+    const toSpend = result.find(utxo => utxo.amount > amount);
+
+    const utxo = new bitcore.Transaction.UnspentOutput({
+      txid: toSpend.txid,
+      vout: toSpend.vout,
+      address: toSpend.address,
+      scriptPubKey: toSpend.scriptPubKey,
+      amount: toSpend.amount
+    });
+
+    const tx = new bitcore.Transaction()
+      .from(utxo)
+      .to(destination, amount * 100000000)
+      .change(faucetLTCAddress)
+      .sign(privateKey);
+
+    const txid = await nodeClient.callRPC({
       payload: {
         jsonrpc: `2.0`,
         method: `sendrawtransaction`,
@@ -87,6 +86,7 @@ module.exports.sendTx = async (amount, destination) => {
       txid
     };
   } catch (err) {
-    return err;
+    console.error(err);
+    return Promise.reject(err);
   }
 };
