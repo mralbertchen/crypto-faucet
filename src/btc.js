@@ -80,12 +80,11 @@ module.exports.sendTx = async (amount, destination) => {
         id: Date.now()
       }
     });
-    return {
-      result: "success",
-      txid
-    };
+    return txid;
   } catch (err) {
     console.log(err);
     return Promise.reject(err);
   }
 };
+
+module.exports.address = faucetBTCAddress;

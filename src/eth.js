@@ -21,7 +21,6 @@ const web3 = new Web3(new Web3.providers.HttpProvider(CHAIN_RPC_URL));
 const factor = new BigNumber(10).exponentiatedBy(18); // decimal for eth
 
 module.exports.sendTx = async (amount, destination) => {
-  debugger;
   try {
     const value = new BigNumber(amount).multipliedBy(factor);
     const nonce = await web3.eth.getTransactionCount(faucetETHAddress);
@@ -42,9 +41,11 @@ module.exports.sendTx = async (amount, destination) => {
     const serializedTx = tx.serialize().toString("hex");
 
     let result = await web3.eth.sendSignedTransaction("0x" + serializedTx);
-    return result;
+    return result.transactionHash;
   } catch (err) {
     console.log(err);
     return Promise.reject(err);
   }
 };
+
+module.exports.address = faucetETHAddress;

@@ -1,6 +1,7 @@
 const Neon = require("@cityofzion/neon-js").default;
 const neoApi = require("@cityofzion/neon-js").api;
 const bitcore = require("bitcore-lib");
+const assert = require("assert");
 
 const seed = process.env.SEED || "abcde12345";
 
@@ -12,8 +13,8 @@ const neoWallet = Neon.create.account(pk);
 const faucetNEOAddress = neoWallet.address;
 
 module.exports.sendTx = async (amount, destination) => {
-  debugger;
   try {
+    assert(Number.isInteger(amount), `NEO must be integer amounts`);
     const intent = neoApi.makeIntent({ NEO: amount }, destination);
     const config = {
       net: "TestNet", // The network to perform the action, MainNet or TestNet.
@@ -24,9 +25,11 @@ module.exports.sendTx = async (amount, destination) => {
 
     let result = await Neon.sendAsset(config);
     console.log(result.response);
-    return result.response;
+    return result.response.txid;
   } catch (err) {
     console.log(err);
-    return Promise.reject(err);
+    return Promise.reject(new Error(err));
   }
 };
+
+module.exports.address = faucetNEOAddress;

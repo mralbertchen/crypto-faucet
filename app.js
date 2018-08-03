@@ -7,11 +7,30 @@ const ETHfaucet = require("./src/eth");
 const NEOfaucet = require("./src/neo");
 const assert = require("assert");
 
-const maxBTC = process.env.MAX_BTC || 0.02;
-const maxETH = process.env.MAX_ETH || 0.05;
-const maxLTC = process.env.MAX_LTC || 0.05;
-const maxNEO = process.env.MAX_NEO || 2;
-const maxGAS = process.env.MAX_GAS || 1;
+const PORT = process.env.PORT || 55688;
+const appName = process.env.APP_NAME || "Crypto Faucet";
+
+const faucetTrigger = {
+  BTC: BTCfaucet.sendTx,
+  LTC: LTCfaucet.sendTx,
+  ETH: ETHfaucet.sendTx,
+  NEO: NEOfaucet.sendTx
+};
+
+const maxSend = {
+  BTC: process.env.MAX_BTC || 0.02,
+  LTC: process.env.MAX_ETH || 0.05,
+  ETH: process.env.MAX_LTC || 0.05,
+  NEO: process.env.MAX_NEO || 2,
+  GAS: process.env.MAX_GAS || 1
+};
+
+const addresses = {
+  BTC: BTCfaucet.address,
+  LTC: LTCfaucet.address,
+  ETH: ETHfaucet.address,
+  NEO: NEOfaucet.address
+};
 
 //To parse URL encoded data
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,70 +43,31 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
-  loadPortfolio(1).then(portfolio => res.render("main", { portfolio }));
+  res.render("main", { appName, maxSend, addresses });
 });
 
-app.post("/btc", async (req, res) => {
-  const dest = req.body.destination;
-  const amount = Number(req.body.amount);
-  if (amount > maxBTC)
-    res
-      .status(500)
-      .send(`Amount ${amount} higher than max BTC amount ${maxBTC}`);
-  else
-    BTCfaucet.sendTx(amount, dest)
-      .then(result => res.status(200).json(result))
-      .catch(err => res.status(500).json(err));
-});
-
-app.post("/ltc", async (req, res) => {
-  const dest = req.body.destination;
-  const amount = Number(req.body.amount);
-  if (amount > maxLTC)
-    res
-      .status(500)
-      .send(`Amount ${amount} higher than max LTC amount ${maxLTC}`);
-  else
-    try {
-      let result = await LTCfaucet.sendTx(amount, dest);
-      res.status(200).json(result);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-});
-
-app.post("/eth", async (req, res) => {
-  const dest = req.body.destination;
-  const amount = Number(req.body.amount);
-  if (amount > maxETH)
-    res
-      .status(500)
-      .send(`Amount ${amount} higher than max ETH amount ${maxETH}`);
-  else
-    ETHfaucet.sendTx(amount, dest)
-      .then(result => res.status(200).json(result))
-      .catch(err => res.status(500).json(err));
-});
-
-app.post("/neo", async (req, res) => {
+app.post("/api/getcoin", async (req, res) => {
   try {
+    assert(
+      req.body.coin && req.body.destination && req.body.amount,
+      `There must be 3 arguments: coin, destination and amount!`
+    );
+    const coin = req.body.coin.toUpperCase();
     const dest = req.body.destination;
     const amount = Number(req.body.amount);
-    assert(Number.isInteger(amount), `NEO must be integer amounts`);
-    if (amount > maxNEO)
-      res
-        .status(500)
-        .send(`Amount ${amount} higher than max NEO amount ${maxNEO}`);
-    else
-      NEOfaucet.sendTx(amount, dest)
-        .then(result => res.status(200).json(result))
-        .catch(err => res.status(500).json(err));
+    assert(
+      amount <= maxSend[coin],
+      `Amount must be lower than ${coin} max amount ${maxSend[coin]}`
+    );
+    faucetTrigger[coin](amount, dest)
+      .then(result => res.status(200).json(result))
+      .catch(err => res.status(500).json(err.message));
   } catch (err) {
-    console.log(err);
+    console.log("Error:", err);
     res.status(500).json(err.message);
   }
 });
 
-var listener = app.listen(process.env.PORT, function() {
+var listener = app.listen(PORT, function() {
   console.log("Your app is listening on port " + listener.address().port);
 });

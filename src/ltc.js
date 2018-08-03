@@ -81,12 +81,11 @@ module.exports.sendTx = async (amount, destination) => {
         id: Date.now()
       }
     });
-    return {
-      result: "success",
-      txid
-    };
+    return txid;
   } catch (err) {
     console.error(err);
     return Promise.reject(err);
   }
 };
+
+module.exports.address = faucetLTCAddress;
