@@ -5,6 +5,7 @@ const BTCfaucet = require("./src/btc");
 const LTCfaucet = require("./src/ltc");
 const ETHfaucet = require("./src/eth");
 const NEOfaucet = require("./src/neo");
+const assert = require("assert");
 
 const maxBTC = process.env.MAX_BTC || 0.02;
 const maxETH = process.env.MAX_ETH || 0.05;
@@ -28,7 +29,7 @@ app.get("/", (req, res) => {
 
 app.post("/btc", async (req, res) => {
   const dest = req.body.destination;
-  const amount = req.body.amount;
+  const amount = Number(req.body.amount);
   if (amount > maxBTC)
     res
       .status(500)
@@ -41,7 +42,7 @@ app.post("/btc", async (req, res) => {
 
 app.post("/ltc", async (req, res) => {
   const dest = req.body.destination;
-  const amount = req.body.amount;
+  const amount = Number(req.body.amount);
   if (amount > maxLTC)
     res
       .status(500)
@@ -57,7 +58,7 @@ app.post("/ltc", async (req, res) => {
 
 app.post("/eth", async (req, res) => {
   const dest = req.body.destination;
-  const amount = req.body.amount;
+  const amount = Number(req.body.amount);
   if (amount > maxETH)
     res
       .status(500)
@@ -66,6 +67,25 @@ app.post("/eth", async (req, res) => {
     ETHfaucet.sendTx(amount, dest)
       .then(result => res.status(200).json(result))
       .catch(err => res.status(500).json(err));
+});
+
+app.post("/neo", async (req, res) => {
+  try {
+    const dest = req.body.destination;
+    const amount = Number(req.body.amount);
+    assert(Number.isInteger(amount), `NEO must be integer amounts`);
+    if (amount > maxNEO)
+      res
+        .status(500)
+        .send(`Amount ${amount} higher than max NEO amount ${maxNEO}`);
+    else
+      NEOfaucet.sendTx(amount, dest)
+        .then(result => res.status(200).json(result))
+        .catch(err => res.status(500).json(err));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err.message);
+  }
 });
 
 var listener = app.listen(55688, function() {
