@@ -2,6 +2,7 @@ const Neon = require("@cityofzion/neon-js").default;
 const neoApi = require("@cityofzion/neon-js").api;
 const bitcore = require("bitcore-lib");
 const assert = require("assert");
+const axios = require("axios");
 
 const seed = process.env.SEED || "abcde12345";
 
@@ -33,3 +34,9 @@ module.exports.sendTx = async (amount, destination) => {
 };
 
 module.exports.address = faucetNEOAddress;
+
+module.exports.getBalance = async (address) => {
+  const { data } = await axios.get(`https://neoscan-testnet.io/api/test_net/v1/get_balance/${address}`);
+  debugger;
+  return data.balance.find(obj => obj.asset === 'NEO').amount;
+};

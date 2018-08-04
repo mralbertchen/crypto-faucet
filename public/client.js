@@ -10,20 +10,20 @@ function getCoin() {
   const resultHTML = `<div class="col-sm-12 alert alert-info"><b>Processing... This may take a while, especially for Ethereum because web3 returns block confirmation.</b></div>`;
   resultElement.innerHTML = resultHTML;
 
-  let url = '';
+  let url = "";
 
-  switch(coin) {
+  switch (coin) {
     case "eth":
-      url = 'https://rinkeby.etherscan.io/tx/';
+      url = "https://rinkeby.etherscan.io/tx/";
       break;
     case "btc":
-      url = 'https://testnet.blockchain.info/tx/';
+      url = "https://testnet.blockchain.info/tx/";
       break;
     case "ltc":
-      url = 'https://chain.so/tx/LTCTEST/';
+      url = "https://chain.so/tx/LTCTEST/";
       break;
     case "neo":
-      url = 'https://neoscan-testnet.io/transaction/';
+      url = "https://neoscan-testnet.io/transaction/";
       break;
   }
 
@@ -56,3 +56,15 @@ function getCoin() {
       submitBtn.disabled = false;
     });
 }
+
+window.onload = function() {
+  const balances = document
+    .getElementById("balances")
+    .getElementsByTagName("span");
+  for (let i = 0; i < balances.length; i++) {
+    let coin = balances[i];
+    axios
+      .get("/api/getbalance/" + coin.id)
+      .then(({ data }) => (coin.innerHTML = data));
+  }
+};

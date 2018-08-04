@@ -32,6 +32,13 @@ const addresses = {
   NEO: NEOfaucet.address
 };
 
+const getBalance = {
+  BTC: BTCfaucet.getBalance,
+  LTC: LTCfaucet.getBalance,
+  ETH: ETHfaucet.getBalance,
+  NEO: NEOfaucet.getBalance
+}
+
 //To parse URL encoded data
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -44,6 +51,18 @@ app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
   res.render("main", { appName, maxSend, addresses });
+});
+
+app.get("/api/getbalance/:coin", async (req, res) => {
+  try {
+    assert(req.params.coin, "There must be a coin specified!");
+    const coin = req.params.coin.toUpperCase();
+    const result = await getBalance[coin](addresses[coin]);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err.message);
+  }
 });
 
 app.post("/api/getcoin", async (req, res) => {

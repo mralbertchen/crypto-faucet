@@ -89,3 +89,34 @@ module.exports.sendTx = async (amount, destination) => {
 };
 
 module.exports.address = faucetLTCAddress;
+
+module.exports.getBalance = async (address) => {
+  const payload = {
+    jsonrpc: "2.0",
+    id: Date.now(),
+    method: "listunspent",
+    params: [0, 9999999, [address]]
+  };
+
+  let result = await nodeClient.callRPC({ payload });
+
+  if (!result.length) {
+    // if address has not already been added to watch list
+    console.log(
+      `Faucet address not imported in LTC node, reimporting. (This could take a few minutes...)`
+    );
+    await nodeClient.callRPC({
+      payload: {
+        jsonrpc: "2.0",
+        id: Date.now(),
+        method: "importaddress",
+        params: [address, "TestFaucet", true]
+      }
+    });
+    result = await nodeClient.callRPC({ payload });
+  }
+
+  const { amount } = result.reduce((acc, curr) => ({amount: acc.amount + curr.amount}), {amount:0});
+  return amount;
+
+};

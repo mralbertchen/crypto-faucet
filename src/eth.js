@@ -49,3 +49,8 @@ module.exports.sendTx = async (amount, destination) => {
 };
 
 module.exports.address = faucetETHAddress;
+
+module.exports.getBalance = async address => {
+  const result = await web3.eth.getBalance(address);
+  return result / factor;
+};

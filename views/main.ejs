@@ -29,27 +29,42 @@
   </div>
   <div class="container">
     <div class="row">
-      <div class="col-sm-12" style="text-align: center">
-        <p>Welcome to
+      <div class="col-sm-12 text-center">
+        <p>
+          <b>Welcome to
             <%= appName || 'Crypto Faucet' %>
-            !
-            <br/> Please use these testnet coins sparingly, and remember to send them back to these addresses when you're done:
+              !</b>
+          <br/> Please use these testnet coins sparingly, and remember to send them back to these addresses when you're done:
         </p>
         <p>
           <% Object.keys(addresses).forEach(key => { %>
-            <%= key %>:
-              <%= addresses[key] %>
+            <b>
+              <%= key %>:
+            </b>
+            <%= addresses[key] %>
               <br/>
-                <% }); %>
+              <% }); %>
+        </p>
+        <p>
+          <b>Current balances: </b>
+        </p>
+        <p id="balances">
+          <% Object.keys(addresses).forEach(key => { %>
+            <b>
+              <%= key %>:
+            </b>
+            <span id="<%= key %>">Loading... </span>
+            <% }); %>
         </p>
         <p>
           <b>Max amount per transaction: </b>
         </p>
         <p>
           <% Object.keys(maxSend).forEach(key => { %>
-            <%= key %>:
-              <%= maxSend[key] %>
-                <% }); %>
+            <b>
+              <%= key %>:</b>
+            <%= maxSend[key] %>
+              <% }); %>
         </p>
       </div>
     </div>
