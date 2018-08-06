@@ -1,6 +1,8 @@
 function getCoin() {
   const submitBtn = document.getElementById("submit");
   submitBtn.disabled = true;
+  const btnEnabledClass = submitBtn.className;
+  submitBtn.className = btnEnabledClass + " disabled";
 
   const amount = document.getElementById("amount").value;
   const destination = document.getElementById("destination").value;
@@ -14,6 +16,9 @@ function getCoin() {
 
   switch (coin) {
     case "eth":
+      url = "https://rinkeby.etherscan.io/tx/";
+      break;
+    case "arca":
       url = "https://rinkeby.etherscan.io/tx/";
       break;
     case "btc":
@@ -54,6 +59,7 @@ function getCoin() {
       } ${err.response.statusText}: ${JSON.stringify(err.response.data)}</div>`;
       resultElement.innerHTML = resultHTML;
       submitBtn.disabled = false;
+      submitBtn.className = btnEnabledClass;
     });
 }
 
