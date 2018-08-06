@@ -40,8 +40,17 @@ module.exports.sendTx = async (amount, destination) => {
     tx.sign(hash);
     const serializedTx = tx.serialize().toString("hex");
 
-    let result = await web3.eth.sendSignedTransaction("0x" + serializedTx);
-    return result.transactionHash;
+    const sendEth = async serializedTx => {
+      return new Promise(function(resolve, reject) {
+        web3.eth
+          .sendSignedTransaction("0x" + serializedTx)
+          .once("transactionHash", (e) => {
+            resolve(e); // done
+          });
+      });
+    };
+
+    return await sendEth(serializedTx);
   } catch (err) {
     console.log(err);
     return Promise.reject(err);

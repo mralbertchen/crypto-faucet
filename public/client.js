@@ -7,7 +7,7 @@ function getCoin() {
   const coin = document.getElementById("coin").value;
 
   const resultElement = document.getElementById("postResult");
-  const resultHTML = `<div class="col-sm-12 alert alert-info"><b>Processing... This may take a while, especially for Ethereum because web3 returns block confirmation.</b></div>`;
+  const resultHTML = `<div class="col-sm-12 alert alert-info"><b>Processing...</b></div>`;
   resultElement.innerHTML = resultHTML;
 
   let url = "";
