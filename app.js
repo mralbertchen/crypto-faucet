@@ -26,7 +26,8 @@ const maxSend = {
   ETH: process.env.MAX_LTC || 0.05,
   NEO: process.env.MAX_NEO || 2,
   GAS: process.env.MAX_GAS || 1,
-  ARCA: process.env.MAX_ARCA || 10
+  ARCA: process.env.MAX_ARCA || 100,
+  ATT: process.env.MAX_ATT || 1000
 };
 
 const addresses = {
