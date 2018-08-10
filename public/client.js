@@ -16,9 +16,8 @@ function getCoin() {
 
   switch (coin) {
     case "eth":
-      url = "https://rinkeby.etherscan.io/tx/";
-      break;
     case "arca":
+    case "att":
       url = "https://rinkeby.etherscan.io/tx/";
       break;
     case "btc":
