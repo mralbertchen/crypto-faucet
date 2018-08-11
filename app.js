@@ -80,6 +80,7 @@ app.get("/api/getbalance/:coin", async (req, res) => {
 });
 
 app.post("/api/getcoin", async (req, res) => {
+  console.log(JSON.stringify(req, null, 2));
   try {
     assert(
       req.body.coin && req.body.destination && req.body.amount,
