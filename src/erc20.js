@@ -35,7 +35,7 @@ module.exports.sendTx = async (amount, destination, token) => {
     const data = arcaContract.methods
       .transfer(
         destination,
-        new BigNumber(amount).multipliedBy(factor)
+        value
       )
       .encodeABI();
 
