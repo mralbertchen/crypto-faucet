@@ -15,7 +15,7 @@ const faucetETHAddress = ethPK.getAddressString();
 // initalize web3
 const CHAIN_RPC_URL =
   process.env.ETH_RPC_URL ||
-  "http://ethereum-1784ae1b379243ee.elb.us-east-1.amazonaws.com:8545";
+  "http://eth.test.nodes.arcavacado.io:8545";
 const web3 = new Web3(new Web3.providers.HttpProvider(CHAIN_RPC_URL));
 
 const factor = new BigNumber(10).exponentiatedBy(18); // decimal for eth
