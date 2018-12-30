@@ -15,7 +15,6 @@ module.exports = ({
     headers = defaultHeaders
   }) => {
     try {
-      // console.log(`#doCall 0 { payload, headers } ${JSON.stringify({ payload, headers }, null, 2)}`);
       const { data } = await axios.post(url, payload, {
         'Content-Length': JSON.stringify(payload).length,
         auth:             auth === {} ? null : auth,
@@ -37,7 +36,7 @@ module.exports = ({
       }
 
       console.info(`RPC Request ${payload.method} on ${data.id} completed ${Date.now()} Time taken: ${Date.now() - data.id} ms`);
-
+      console.info(`RPC Returns: ${JSON.stringify(data.result)}`);
       return data.result;
     } catch (err) {
       const error = {

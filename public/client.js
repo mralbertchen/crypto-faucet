@@ -21,12 +21,14 @@ function getCoin() {
       url = "https://rinkeby.etherscan.io/tx/";
       break;
     case "btc":
-      url = "https://testnet.blockchain.info/tx/";
+      url = "https://live.blockcypher.com/btc-testnet/tx/";
       break;
     case "ltc":
       url = "https://chain.so/tx/LTCTEST/";
       break;
     case "neo":
+    case "gas":
+    case "ctx":
       url = "https://neoscan-testnet.io/transaction/";
       break;
   }
