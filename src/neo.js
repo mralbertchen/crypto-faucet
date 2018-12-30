@@ -37,6 +37,5 @@ module.exports.address = faucetNEOAddress;
 
 module.exports.getBalance = async (address) => {
   const { data } = await axios.get(`https://neoscan-testnet.io/api/test_net/v1/get_balance/${address}`);
-  debugger;
   return data.balance.find(obj => obj.asset === 'NEO').amount;
 };

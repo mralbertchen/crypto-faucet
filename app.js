@@ -6,8 +6,11 @@ const LTCfaucet = require("./src/ltc");
 const ETHfaucet = require("./src/eth");
 const NEOfaucet = require("./src/neo");
 const erc20Faucet = require("./src/erc20");
+const nep5Faucet = require("./src/nep5");
 const assert = require("assert");
-const tokenList = require("./src/json/token-list.json");
+const erc20 = require("./src/json/erc20.json");
+const nep5 = require("./src/json/nep5.json")
+
 
 const PORT = process.env.PORT || 55688;
 const appName = process.env.APP_NAME || "Crypto Faucet";
@@ -17,7 +20,8 @@ const faucetTrigger = {
   LTC: LTCfaucet.sendTx,
   ETH: ETHfaucet.sendTx,
   NEO: NEOfaucet.sendTx,
-  ERC20: erc20Faucet.sendTx
+  ERC20: erc20Faucet.sendTx,
+  NEP5: nep5Faucet.sendTx
 };
 
 const maxSend = {
@@ -27,7 +31,8 @@ const maxSend = {
   NEO: process.env.MAX_NEO || 2,
   GAS: process.env.MAX_GAS || 1,
   ARCA: process.env.MAX_ARCA || 100,
-  ATT: process.env.MAX_ATT || 1000
+  ATT: process.env.MAX_ATT || 1000,
+  CTX: process.env.MAX_CTX || 5
 };
 
 const addresses = {
@@ -37,14 +42,16 @@ const addresses = {
   NEO: NEOfaucet.address
 };
 
-Object.keys(tokenList).forEach(key => addresses[key] = ETHfaucet.address);
+Object.keys(erc20).forEach(key => addresses[key] = ETHfaucet.address);
+nep5.forEach(({ symbol }) => addresses[symbol] = NEOfaucet.address);
 
 const getBalance = {
   BTC: BTCfaucet.getBalance,
   LTC: LTCfaucet.getBalance,
   ETH: ETHfaucet.getBalance,
   ERC20: erc20Faucet.getBalance,
-  NEO: NEOfaucet.getBalance
+  NEO: NEOfaucet.getBalance,
+  NEP5: nep5Faucet.getBalance
 }
 
 //To parse URL encoded data
@@ -66,9 +73,12 @@ app.get("/api/getbalance/:coin", async (req, res) => {
     assert(req.params.coin, "There must be a coin specified!");
     const coin = req.params.coin.toUpperCase();
     let result;
-    if (tokenList[coin]) {
+    if (erc20[coin]) {
       // if it's ERC20
       result = await getBalance["ERC20"](addresses["ETH"], coin);
+    } else if (nep5.find(({ symbol }) => symbol === coin)) {
+      // if it's NEP5
+      result = await getBalance["NEP5"](addresses["NEO"], coin);
     } else {
       result = await getBalance[coin](addresses[coin]);
     }
@@ -94,9 +104,12 @@ app.post("/api/getcoin", async (req, res) => {
       `Amount must be lower than ${coin} max amount ${maxSend[coin]}`
     );
     let result;
-    if (tokenList[coin]) {
+    if (erc20[coin]) {
       // if it's ERC20
       result = await faucetTrigger["ERC20"](amount, dest, coin);
+    } else if (nep5.find(({ symbol }) => symbol === coin)) {
+      // if it's NEP5
+      result = await faucetTrigger["NEP5"](amount, dest, coin);
     } else {
       result = await faucetTrigger[coin](amount, dest);
     }

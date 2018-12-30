@@ -3,7 +3,7 @@ const ethWallet = require("ethereumjs-wallet");
 const ethTx = require("ethereumjs-tx");
 const BigNumber = require("bignumber.js");
 const Web3 = require("web3");
-const tokenList = require("./json/token-list.json");
+const erc20 = require("./json/erc20.json");
 const { abi } = require("./json/ArcaToken.json");
 const assert = require("assert");
 
@@ -25,7 +25,7 @@ const factor = new BigNumber(10).exponentiatedBy(18); // decimal for eth
 
 module.exports.sendTx = async (amount, destination, token) => {
   try {
-    assert(tokenList[token], `Token ${token} does not exist!`);
+    assert(erc20[token], `Token ${token} does not exist!`);
     const value = new BigNumber(amount).multipliedBy(factor);
     const nonce = await web3.eth.getTransactionCount(faucetETHAddress);
     const gasLimit = new BigNumber(200000);
@@ -43,7 +43,7 @@ module.exports.sendTx = async (amount, destination, token) => {
       nonce: `0x${nonce.toString(16)}`,
       gasPrice: `0xBA43B7400`,
       gasLimit: `0x${gasLimit.toString(16)}`,
-      to: tokenList[token],
+      to: erc20[token],
       value: `0x0`,
       data: data
       //  chainId: 4
@@ -76,11 +76,11 @@ module.exports.sendTx = async (amount, destination, token) => {
 module.exports.address = faucetETHAddress;
 
 module.exports.getBalance = async (address, token) => {
-  assert(tokenList[token], `Token ${token} does not exist!`);
+  assert(erc20[token], `Token ${token} does not exist!`);
   try {
     const contract = new web3.eth.Contract(
       abi,
-      tokenList[token],
+      erc20[token],
     );
     const result = await contract.methods
     .balanceOf(address)
