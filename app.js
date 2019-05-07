@@ -37,9 +37,9 @@ const maxSend = {
 
 const addresses = {
   BTC: BTCfaucet.address,
-  LTC: LTCfaucet.address,
-  ETH: ETHfaucet.address,
-  NEO: NEOfaucet.address
+  // LTC: LTCfaucet.address,
+  ETH: ETHfaucet.address
+  // NEO: NEOfaucet.address
 };
 
 Object.keys(erc20).forEach(key => addresses[key] = ETHfaucet.address);
