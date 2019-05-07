@@ -26,13 +26,13 @@ const faucetTrigger = {
 
 const maxSend = {
   BTC: process.env.MAX_BTC || 0.02,
-  LTC: process.env.MAX_ETH || 0.05,
-  ETH: process.env.MAX_LTC || 0.05,
-  NEO: process.env.MAX_NEO || 2,
-  GAS: process.env.MAX_GAS || 1,
-  ARCA: process.env.MAX_ARCA || 100,
-  ATT: process.env.MAX_ATT || 1000,
-  CTX: process.env.MAX_CTX || 5
+  // LTC: process.env.MAX_ETH || 0.05,
+  ETH: process.env.MAX_LTC || 0.05
+  // NEO: process.env.MAX_NEO || 2,
+  // GAS: process.env.MAX_GAS || 1,
+  // ARCA: process.env.MAX_ARCA || 100,
+  // ATT: process.env.MAX_ATT || 1000,
+  // CTX: process.env.MAX_CTX || 5
 };
 
 const addresses = {
