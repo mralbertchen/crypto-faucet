@@ -38,6 +38,9 @@ module.exports.sendTx = async (amount, destination) => {
 
     const tx = new ethTx(txParams);
     tx.sign(hash);
+
+    console.log('signed tx:', tx);
+  
     const serializedTx = tx.serialize().toString("hex");
 
     const sendEth = async serializedTx => {
